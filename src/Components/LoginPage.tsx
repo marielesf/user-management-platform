@@ -10,6 +10,8 @@ import Link from '@mui/material/Link';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import { styled } from '@mui/material/styles';
+import { setUserName } from './useAuth';
+import { useNavigate } from 'react-router-dom';
 
 const Card = styled(MuiCard)(({ theme }) => ({
   display: 'flex',
@@ -29,14 +31,15 @@ const Card = styled(MuiCard)(({ theme }) => ({
   }),
 }));
 
-export default function SignInCard() {
-  const [emailError, setEmailError] = React.useState(false);
-  const [emailErrorMessage, setEmailErrorMessage] = React.useState('');
+export default function LoginPage() {
+  const navigate = useNavigate();
+  const [userNameError, setUserNameError] = React.useState(false);
+  const [userNameErrorMessage, setUserNameMessage] = React.useState('');
   const [passwordError, setPasswordError] = React.useState(false);
   const [passwordErrorMessage, setPasswordErrorMessage] = React.useState('');
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    if (emailError || passwordError) {
+    if (userNameError || passwordError) {
       event.preventDefault();
       return;
     }
@@ -48,18 +51,18 @@ export default function SignInCard() {
   };
 
   const validateInputs = () => {
-    const email = document.getElementById('email') as HTMLInputElement;
+    const userName = document.getElementById('userName') as HTMLInputElement;
     const password = document.getElementById('password') as HTMLInputElement;
 
     let isValid = true;
 
-    if (!email.value || !/\S+@\S+\.\S+/.test(email.value)) {
-      setEmailError(true);
-      setEmailErrorMessage('Please enter a valid email address.');
+    if (!userName.value || !(userName.value.length > 0)) {
+      setUserNameError(true);
+      setUserNameMessage('Please enter a valid user name.');
       isValid = false;
     } else {
-      setEmailError(false);
-      setEmailErrorMessage('');
+      setUserNameError(false);
+      setUserNameMessage('');
     }
 
     if (!password.value || password.value.length < 6) {
@@ -70,18 +73,11 @@ export default function SignInCard() {
       setPasswordError(false);
       setPasswordErrorMessage('');
     }
-    if(isValid){
-      const saveNameBtn = document.querySelector(".saveNameBtn");
-      if (saveNameBtn) {
-        saveNameBtn.addEventListener("click", () => {
-        const userNameElement = document.querySelector("email") as HTMLInputElement;
-        localStorage.setItem("user", userNameElement.value);
-        });
-      }
+    if (isValid) {
+      setUserName(userName.value);
     }
     return isValid;
   };
-  
 
   return (
     <Card variant="outlined">
@@ -102,18 +98,16 @@ export default function SignInCard() {
         <FormControl>
           <FormLabel htmlFor="email">Email</FormLabel>
           <TextField
-            error={emailError}
-            helperText={emailErrorMessage}
-            id="email"
-            type="email"
-            name="email"
-            placeholder="your@email.com"
-            autoComplete="email"
+            error={userNameError}
+            helperText={userNameErrorMessage}
+            id="userName"
+            name="userName"
+            placeholder="name"
             autoFocus
             required
             fullWidth
             variant="outlined"
-            color={emailError ? 'error' : 'primary'}
+            color={userNameError ? 'error' : 'primary'}
           />
         </FormControl>
         <FormControl>
@@ -142,18 +136,18 @@ export default function SignInCard() {
           type="submit"
           fullWidth
           variant="contained"
-          onClick={validateInputs}
+          onClick={() => {
+            if (validateInputs()) {
+              navigate('/');
+            }
+          }}
         >
           Sign in
         </Button>
         <Typography sx={{ textAlign: 'center' }}>
           Don&apos;t have an account?{' '}
           <span>
-            <Link
-              href="\src\Components\SignupCard"
-              variant="body2"
-              sx={{ alignSelf: 'center' }}
-            >
+            <Link href="/signup" variant="body2" sx={{ alignSelf: 'center' }}>
               Sign up
             </Link>
           </span>

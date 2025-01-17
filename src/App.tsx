@@ -1,26 +1,32 @@
-import './App.css'
-import SignInCard from './Components/SignInCard'
-import SignupCard from './Components/SignupCard'
-import HomePage from './Components/HomePage'
-// import LoginPage from './LoginPage'
+import { Route, Routes } from 'react-router-dom';
+import './App.css';
+import HomePage from './Components/HomePage';
+import LoginPage from './Components/LoginPage';
+import SignupCard from './Components/SignupCard';
+import { useNavigate } from 'react-router';
+import { useAuth } from './Components/useAuth';
+import { useEffect } from 'react';
 
 function App() {
+  const navigate = useNavigate();
+  const { isLoggedIn } = useAuth();
+
+  useEffect(() => {
+    console.log(isLoggedIn);
+    if (isLoggedIn) {
+      navigate('/');
+    } else {
+      navigate('/login');
+    }
+  }, [isLoggedIn, navigate]);
 
   return (
-    <>
-<SignInCard />
-<SignupCard />
-<HomePage />
-
-      {/* <div>
-        LOGIN
-      </div> */}
-      
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <Routes>
+      <Route path="/" element={<HomePage />} />
+      <Route path="/login" element={<LoginPage />} />
+      <Route path="/signup" element={<SignupCard />} />
+    </Routes>
+  );
 }
 
-export default App
+export default App;
