@@ -10,8 +10,8 @@ import Link from '@mui/material/Link';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import { styled } from '@mui/material/styles';
-import { setUserName } from './useAuth';
-import { useNavigate } from 'react-router-dom';
+import { pageRedirect, setUserName, useAuth } from './useAuth';
+// import { useNavigate } from 'react-router-dom';
 
 const Card = styled(MuiCard)(({ theme }) => ({
   display: 'flex',
@@ -32,7 +32,9 @@ const Card = styled(MuiCard)(({ theme }) => ({
 }));
 
 export default function LoginPage() {
-  const navigate = useNavigate();
+  //const navigate = useNavigate();
+  const { isLoggedIn } = useAuth();
+
   const [userNameError, setUserNameError] = React.useState(false);
   const [userNameErrorMessage, setUserNameMessage] = React.useState('');
   const [passwordError, setPasswordError] = React.useState(false);
@@ -65,9 +67,9 @@ export default function LoginPage() {
       setUserNameMessage('');
     }
 
-    if (!password.value || password.value.length < 6) {
+    if (!password.value || !(password.value.length > 4)) {
       setPasswordError(true);
-      setPasswordErrorMessage('Password must be at least 6 characters long.');
+      setPasswordErrorMessage('Password must be valid.');
       isValid = false;
     } else {
       setPasswordError(false);
@@ -96,7 +98,7 @@ export default function LoginPage() {
         sx={{ display: 'flex', flexDirection: 'column', width: '100%', gap: 2 }}
       >
         <FormControl>
-          <FormLabel htmlFor="email">Email</FormLabel>
+          <FormLabel htmlFor="userName">User Name</FormLabel>
           <TextField
             error={userNameError}
             helperText={userNameErrorMessage}
@@ -138,7 +140,7 @@ export default function LoginPage() {
           variant="contained"
           onClick={() => {
             if (validateInputs()) {
-              navigate('/');
+              pageRedirect(isLoggedIn);
             }
           }}
         >
@@ -147,7 +149,11 @@ export default function LoginPage() {
         <Typography sx={{ textAlign: 'center' }}>
           Don&apos;t have an account?{' '}
           <span>
-            <Link href="/signup" variant="body2" sx={{ alignSelf: 'center' }}>
+            <Link
+              variant="body2"
+              sx={{ alignSelf: 'center' }}
+              onClick={() => pageRedirect(isLoggedIn)}
+            >
               Sign up
             </Link>
           </span>

@@ -39,6 +39,11 @@ export const getUserName = () => {
   return localStorage.getItem('user');
 };
 
+export const pageRedirect = (isLoggedIn: boolean) => {
+  if (!isLoggedIn) window.location.href = '/login';
+  else window.location.href = '/';
+};
+
 export default AuthProvider;
 
 export const useAuth = () => {

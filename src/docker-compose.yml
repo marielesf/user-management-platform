@@ -1,0 +1,7 @@
+services:
+  user-management-platform-frontend:
+    build:
+      context: .
+    container_name: user-management-platform-frontend
+    ports:
+      - 8080:8080

@@ -1,27 +1,27 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { getUserName } from '../Components/useAuth';
+import { ListType } from '../Components/UserList';
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
-const url = 'https://reqres.in/api/users';
+const baseUrl = 'https://reqres.in/api/users';
 
-export const getListUsers = async () => {
-  await fetch(url, {
+export const getListUsers = async (): Promise<ListType> => {
+  const response = await fetch(baseUrl, {
     method: 'GET',
     headers: {
       Accept: 'application/json',
       Authorization: 'Bearer ' + getUserName(),
     },
-  }).then((response) => {
-    if (response.status === 200) {
-      response.json().then((result) => {
-        console.log(result);
-        return result;
-      });
-    } else {
-      return;
-    }
   });
+
+  if (response.status === 200) {
+    const result = await response.json();
+    console.log('SSS: ', result);
+    return result;
+  } else {
+    return {} as ListType;
+  }
 };
 
 export const addPosts = async (title: any, body: any) => {
