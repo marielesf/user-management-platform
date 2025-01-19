@@ -10,7 +10,8 @@ import Link from '@mui/material/Link';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import { styled } from '@mui/material/styles';
-import { pageRedirect, setUserName, useAuth } from './useAuth';
+import { pageRedirect, setLocalStorage } from './useAuth';
+import { loginSuccessful } from '../Service/LoginService';
 // import { useNavigate } from 'react-router-dom';
 
 const Card = styled(MuiCard)(({ theme }) => ({
@@ -31,10 +32,16 @@ const Card = styled(MuiCard)(({ theme }) => ({
   }),
 }));
 
-export default function LoginPage() {
-  //const navigate = useNavigate();
-  const { isLoggedIn } = useAuth();
+export const doRegister = async (userName: string, password: string) => {
+  const token = await loginSuccessful(userName, password);
+  if (token) {
+    setLocalStorage(userName, token);
+    return true;
+  }
+  return false;
+};
 
+export default function LoginPage() {
   const [userNameError, setUserNameError] = React.useState(false);
   const [userNameErrorMessage, setUserNameMessage] = React.useState('');
   const [passwordError, setPasswordError] = React.useState(false);
@@ -52,7 +59,7 @@ export default function LoginPage() {
     });
   };
 
-  const validateInputs = () => {
+  const validateInputs = async () => {
     const userName = document.getElementById('userName') as HTMLInputElement;
     const password = document.getElementById('password') as HTMLInputElement;
 
@@ -76,9 +83,9 @@ export default function LoginPage() {
       setPasswordErrorMessage('');
     }
     if (isValid) {
-      setUserName(userName.value);
+      return await doRegister(userName.value, password.value);
     }
-    return isValid;
+    return false;
   };
 
   return (
@@ -138,9 +145,12 @@ export default function LoginPage() {
           type="submit"
           fullWidth
           variant="contained"
-          onClick={() => {
-            if (validateInputs()) {
-              pageRedirect(isLoggedIn);
+          onClick={async (e) => {
+            e.preventDefault();
+            if (await validateInputs()) {
+              console.log('Login successful');
+
+              await pageRedirect('home');
             }
           }}
         >
@@ -152,7 +162,7 @@ export default function LoginPage() {
             <Link
               variant="body2"
               sx={{ alignSelf: 'center' }}
-              onClick={() => pageRedirect(isLoggedIn)}
+              onClick={() => pageRedirect('signup')}
             >
               Sign up
             </Link>

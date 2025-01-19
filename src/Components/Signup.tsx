@@ -4,10 +4,11 @@ import Grid from '@mui/material/Grid2';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import { styled } from '@mui/material/styles';
 import { useNavigate } from 'react-router-dom';
-import { pageRedirect, setUserName, useAuth } from './useAuth';
+import { pageRedirect } from './useAuth';
 import FormControl from '@mui/material/FormControl';
 import TextField from '@mui/material/TextField';
 import React from 'react';
+import { doRegister } from './LoginPage';
 
 const FormGrid = styled(Grid)(() => ({
   display: 'flex',
@@ -16,30 +17,28 @@ const FormGrid = styled(Grid)(() => ({
 
 export default function Signup() {
   const navigate = useNavigate();
-  const { isLoggedIn } = useAuth();
+  // const { isLoggedIn } = useAuth();
 
   const [passwordError, setPasswordError] = React.useState(false);
   const [passwordErrorMessage, setPasswordErrorMessage] = React.useState('');
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     const data = new FormData(event.currentTarget);
-    console.log({
-      name: data.get('userName'),
-      password: data.get('password'),
-      passwordConfirmation: data.get('passwordConfirmation'),
-    });
-    if (!data.get('userName') || !data.get('password')) {
+    const userName = data.get('userName')?.toString() || '';
+    const password = data.get('password')?.toString() || '';
+
+    if (!userName || !password) {
       setPasswordErrorMessage('Please enter a valid user name and password');
       setPasswordError(true);
-    } else if (data.get('password') !== data.get('passwordConfirmation')) {
+    } else if (password !== data.get('passwordConfirmation')) {
       setPasswordErrorMessage('Passwords do not match');
       setPasswordError(true);
-    } else if ((data.get('password') as string).length < 4) {
+    } else if (password.length < 4) {
       setPasswordError(true);
       setPasswordErrorMessage('Password must be at least 4 characters long.');
-    } else if (data.get('userName')) {
-      alert(`User: ${data.get('userName')} created successfully!`);
-      setUserName(data.get('userName')!.toString());
+    } else if (userName) {
+      doRegister(userName, password);
+      alert(`User: ${userName} created successfully!`);
       navigate('/');
     }
   };
@@ -111,14 +110,10 @@ export default function Signup() {
             color={passwordError ? 'error' : 'primary'}
           />
         </FormGrid>
-        <Button
-          type="submit"
-          variant="contained"
-          //onClick={() => pageRedirect(isLoggedIn)}
-        >
+        <Button type="submit" variant="contained">
           Sign up
         </Button>
-        <Button variant="contained" onClick={() => pageRedirect(isLoggedIn)}>
+        <Button variant="contained" onClick={() => pageRedirect('login')}>
           Cancel
         </Button>
       </Grid>
