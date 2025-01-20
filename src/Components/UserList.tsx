@@ -1,75 +1,27 @@
 import Box from '@mui/material/Box';
 import { DataGrid } from '@mui/x-data-grid/DataGrid';
 import { GridColDef } from '@mui/x-data-grid/models/colDef';
-import { getListUsers } from '../Service/UserService';
-import { useEffect } from 'react';
+import { editUser, getListUsers } from '../Service/UserService';
+import { useContext, useEffect } from 'react';
 import React from 'react';
 import { camelCase } from 'lodash';
-import { UserAction } from './UserAction';
+// import { UserAction } from './UserAction';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@mui/material';
 import { GridPaginationMeta } from '@mui/x-data-grid';
-
-export type User = {
-  id: number;
-  firstName: string;
-  lastName: string;
-  email: string;
-  fullName: string;
-};
-
-export type ListType = {
-  data: User[];
-  page: number;
-  per_page: number;
-  total: number;
-  total_pages: number;
-};
-
-const columns: GridColDef<User[][number]>[] = [
-  { field: 'id', headerName: 'ID', width: 90, flex: 90 },
-  {
-    field: 'firstName',
-    headerName: 'First name',
-    sortable: true,
-    flex: 100,
-    editable: true,
-  },
-  {
-    field: 'lastName',
-    headerName: 'Last name',
-    sortable: true,
-    flex: 150,
-    editable: true,
-  },
-  {
-    field: 'email',
-    headerName: 'Email',
-    flex: 200,
-    editable: true,
-    sortable: false,
-  },
-  {
-    field: 'full_name',
-    headerName: 'Full name',
-    description: 'This column has a value getter and is not sortable.',
-    sortable: false,
-    flex: 200,
-    valueGetter: (value, row) => `${row.firstName || ''} ${row.lastName || ''}`,
-  },
-  {
-    field: 'actions',
-    headerName: 'Actions',
-    flex: 200,
-    renderCell: () => <UserAction />,
-  },
-];
+import DeleteIcon from '@mui/icons-material/Delete';
+import ModeEditOutlineOutlinedIcon from '@mui/icons-material/ModeEditOutlineOutlined';
+import { deleteUser } from '../Service/UserService';
+import { ThemeContext } from 'styled-components';
+import { ListType, User } from './Types/UserTypes';
 
 export default function UserList() {
   const [userList, setUserList] = React.useState<ListType>({
     page: 1,
     per_page: 6,
   } as ListType);
+
+  const { theme } = useContext(ThemeContext) || { theme: 'light' };
 
   const [paginationModel, setPaginationModel] = React.useState({
     pageSize: userList.per_page,
@@ -87,24 +39,13 @@ export default function UserList() {
     }
     return paginationMetaRef.current;
   }, [hasNextPage]);
-  // const {
-  //   isLoading,
-  //   rows,
-  //   pageInfo: { hasNextPage },
-  // } = useQuery(paginationModel);
-  // const rowCountRef = React.useRef(userList?.total || 0);
 
   const navigate = useNavigate();
 
-  async function fetchData(page: number) {
-    //const page = userList?.page + 1 || 1;
-    const response = await getListUsers(page);
+  const fetchData = React.useCallback(async () => {
+    const response = await getListUsers(paginationModel.page + 1);
 
-    // for (let i = 2; i < response.total_pages; i++) {
-    //   response = await getListUsers(i);
-    //   console.log('response: ', response);
-    // }
-    const obj: User[] = response.data.map((user) =>
+    const obj: User[] = response.data.map((user: Record<string, unknown>) =>
       Object.keys(user).reduce(
         (result, key) => ({
           ...result,
@@ -121,15 +62,89 @@ export default function UserList() {
       total: obj.length,
       total_pages: response.total_pages,
     });
-  }
+  }, [paginationModel.page]);
+
+  const columns: GridColDef<User[][number]>[] = [
+    { field: 'id', headerName: 'ID', width: 90, flex: 90 },
+    {
+      field: 'firstName',
+      headerName: 'First name',
+      sortable: true,
+      flex: 100,
+      editable: true,
+    },
+    {
+      field: 'lastName',
+      headerName: 'Last name',
+      sortable: true,
+      flex: 150,
+      editable: true,
+    },
+    {
+      field: 'email',
+      headerName: 'Email',
+      flex: 200,
+      editable: true,
+      sortable: false,
+    },
+    {
+      field: 'full_name',
+      headerName: 'Full name',
+      description: 'This column has a value getter and is not sortable.',
+      sortable: false,
+      flex: 200,
+      valueGetter: (value, row) =>
+        `${row.firstName || ''} ${row.lastName || ''}`,
+    },
+    {
+      field: 'actions',
+      headerName: 'Actions',
+      flex: 200,
+      renderCell: (params) => (
+        <div>
+          <Button
+            type="submit"
+            onClick={() => {
+              const id = params.row.id;
+              setUserList({
+                ...userList,
+                data: userList.data.filter((user) => user.id !== id),
+              });
+              editUser(id);
+            }}
+          >
+            <ModeEditOutlineOutlinedIcon />
+          </Button>
+          <Button
+            type="submit"
+            onClick={() => {
+              const id = params.row.id;
+              setUserList({
+                ...userList,
+                data: userList.data.filter((user) => user.id !== id),
+              });
+              deleteUser(id);
+            }}
+          >
+            <DeleteIcon className="" />
+          </Button>
+        </div>
+      ),
+    },
+  ];
 
   useEffect(() => {
-    fetchData(userList.page);
-  }, []);
-  console.log('userList: ', userList);
+    (async () => {
+      console.log('useEffect - paginationModel', paginationModel);
+      await fetchData();
+    })();
+  }, [fetchData, paginationModel, paginationModel.page]);
 
   return (
-    <Box sx={{ width: '100%' }}>
+    <Box
+      sx={{ width: '100%' }}
+      className={`${theme === 'dark' ? 'dark' : 'light'}`}
+    >
       <DataGrid
         rows={userList.data}
         {...userList.data}
@@ -142,20 +157,9 @@ export default function UserList() {
             rowCount: -1,
           },
         }}
-        onPaginationMetaChange={(newMeta) => {
-          console.log('newMeta: ', newMeta);
-          //setHasNextPage(newMeta.hasNextPage);
-        }}
         paginationMeta={paginationMeta}
-        onPaginationModelChange={async (model) => {
-          await fetchData(userList.page);
-          console.log('model: ', model);
-          setPaginationModel({
-            pageSize: userList.per_page,
-            page: userList.page,
-          });
-          console.log('model: ', model);
-        }}
+        pagination
+        onPaginationModelChange={setPaginationModel}
         disableRowSelectionOnClick
       />
 

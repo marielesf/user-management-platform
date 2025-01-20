@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-
+import { ListType } from '../Components/Types/UserTypes';
 import { getUserName } from '../Components/useAuth';
-import { ListType } from '../Components/UserList';
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
 const baseUrl = 'https://reqres.in/api/users';
@@ -24,39 +23,26 @@ export const getListUsers = async (page: number): Promise<ListType> => {
   }
 };
 
-export const addPosts = async (title: any, body: any) => {
-  await fetch('https://jsonplaceholder.typicode.com/posts', {
-    method: 'POST',
-    body: JSON.stringify({
-      title: title,
-      body: body,
-      userId: Math.random().toString(36).slice(2),
-    }),
+export const deleteUser = async (id: number) => {
+  fetch(baseUrl + `/${id}`, {
+    method: 'DELETE',
     headers: {
       'Content-type': 'application/json; charset=UTF-8',
+      Authorization: 'Bearer ' + getUserName(),
     },
   })
     .then((response) => response.json())
-    .then((data) => {
-      // setPosts((posts: any) => [data, ...posts]);
-      // setTitle('');
-      // setBody('');
-    })
     .catch((err) => {
       console.log(err.message);
     });
 };
 
-export const deletePost = async (id: any) => {
-  await fetch(`https://jsonplaceholder.typicode.com/posts/${id}`, {
-    method: 'DELETE',
+export const editUser = async (id: any) => {
+  await fetch(`${baseUrl}/?${id}`, {
+    method: 'PUT',
   }).then((response) => {
     if (response.status === 200) {
-      // setPosts(
-      //   posts.filter((post: { id: any }) => {
-      //     return post.id !== id;
-      //   }),
-      // );
+      console.log('SERVICE - edit user ', id);
     } else {
       return;
     }

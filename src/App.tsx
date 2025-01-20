@@ -1,12 +1,23 @@
-// import { useNavigate } from 'react-router-dom';
+import { ThemeProvider } from 'styled-components';
 import './App.css';
-// import { useAuth } from './Components/useAuth';
 import AppRoutes from './Components/AppRoutes';
-// import { useEffect } from 'react';
-// import LoginPage from './LoginPage'
+import createTheme from '@mui/material/styles/createTheme';
+import { red } from '@mui/material/colors';
+
+const theme = createTheme({
+  palette: {
+    primary: {
+      main: red[500],
+    },
+  },
+});
 
 function App() {
-  return <AppRoutes />;
+  return (
+    <ThemeProvider theme={theme}>
+      <AppRoutes />
+    </ThemeProvider>
+  );
 }
 
 export default App;
