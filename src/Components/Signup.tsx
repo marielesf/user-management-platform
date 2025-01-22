@@ -7,8 +7,10 @@ import { useNavigate } from 'react-router-dom';
 import { pageRedirect } from './useAuth';
 import FormControl from '@mui/material/FormControl';
 import TextField from '@mui/material/TextField';
-import React from 'react';
+import React, { useContext, useEffect } from 'react';
 import { doRegister } from './LoginPage';
+import { AppContext } from '../context/Context';
+import { User } from './Types/UserTypes';
 
 const FormGrid = styled(Grid)(() => ({
   display: 'flex',
@@ -17,7 +19,47 @@ const FormGrid = styled(Grid)(() => ({
 
 export default function Signup() {
   const navigate = useNavigate();
-  // const { isLoggedIn } = useAuth();
+  const appContext = useContext(AppContext);
+  if (!appContext) {
+    throw new Error('AppContext is undefined');
+  }
+  const edit = new URLSearchParams(location.search).get('edit');
+  const userId = new URLSearchParams(location.search).get('userId');
+  useEffect(() => {
+    handleLoad();
+  }, []);
+  const handleLoad = () => {
+    console.log('edit', edit, 'userId', userId);
+    if (edit === 'true' && userId) {
+      const user = appContext.users.find((user) => user.id === Number(userId));
+      console.log('user', user);
+      if (user) {
+        // set values to form
+        const userNameElement = document.getElementById(
+          'userName',
+        ) as HTMLInputElement;
+        if (userNameElement) {
+          userNameElement.value = user?.firstName + ' ' + user?.lastName;
+        }
+        const emailElement = document.getElementById(
+          'email',
+        ) as HTMLInputElement;
+        if (emailElement) {
+          emailElement.value = user.email;
+        }
+      }
+    }
+  };
+  const { dispatchUserEvent } = appContext;
+
+  const handleAddtUser = (user: User) => {
+    if (edit === 'true' && userId) {
+      dispatchUserEvent('EDIT_USER', user);
+      return;
+    } else {
+      dispatchUserEvent('ADD_USER', user);
+    }
+  };
 
   const [passwordError, setPasswordError] = React.useState(false);
   const [passwordErrorMessage, setPasswordErrorMessage] = React.useState('');
@@ -25,6 +67,7 @@ export default function Signup() {
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     const data = new FormData(event.currentTarget);
     const userName = data.get('userName')?.toString() || '';
+    const email = data.get('email')?.toString() || '';
     const password = data.get('password')?.toString() || '';
 
     if (!userName || !password) {
@@ -37,6 +80,8 @@ export default function Signup() {
       setPasswordError(true);
       setPasswordErrorMessage('Password must be at least 4 characters long.');
     } else if (userName) {
+      const user: User = { email: email, fullName: userName };
+      handleAddtUser(user);
       doRegister(userName, password);
       alert(`User: ${userName} created successfully!`);
       navigate('/');

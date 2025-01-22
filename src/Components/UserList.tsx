@@ -1,27 +1,30 @@
 import Box from '@mui/material/Box';
 import { DataGrid } from '@mui/x-data-grid/DataGrid';
 import { GridColDef } from '@mui/x-data-grid/models/colDef';
-import { editUser, getListUsers } from '../Service/UserService';
+import { getListUsers } from '../Service/UserService';
 import { useContext, useEffect } from 'react';
 import React from 'react';
 import { camelCase } from 'lodash';
-// import { UserAction } from './UserAction';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@mui/material';
 import { GridPaginationMeta } from '@mui/x-data-grid';
-import DeleteIcon from '@mui/icons-material/Delete';
-import ModeEditOutlineOutlinedIcon from '@mui/icons-material/ModeEditOutlineOutlined';
-import { deleteUser } from '../Service/UserService';
-import { ThemeContext } from 'styled-components';
 import { ListType, User } from './Types/UserTypes';
+import { UserAction } from './UserAction';
+import { AppContext } from '../context/Context';
 
 export default function UserList() {
+  const appContext = useContext(AppContext);
+  if (!appContext) {
+    throw new Error('AppContext is undefined');
+  }
+  const { addAllUsers, users } = appContext;
+
+  // const { theme } = useContext(ThemeContext) || { theme: 'light' };
   const [userList, setUserList] = React.useState<ListType>({
     page: 1,
     per_page: 6,
+    data: users,
   } as ListType);
-
-  const { theme } = useContext(ThemeContext) || { theme: 'light' };
 
   const [paginationModel, setPaginationModel] = React.useState({
     pageSize: userList.per_page,
@@ -62,7 +65,8 @@ export default function UserList() {
       total: obj.length,
       total_pages: response.total_pages,
     });
-  }, [paginationModel.page]);
+    addAllUsers(obj);
+  }, [paginationModel.page, addAllUsers]);
 
   const columns: GridColDef<User[][number]>[] = [
     { field: 'id', headerName: 'ID', width: 90, flex: 90 },
@@ -101,53 +105,32 @@ export default function UserList() {
       headerName: 'Actions',
       flex: 200,
       renderCell: (params) => (
-        <div>
-          <Button
-            type="submit"
-            onClick={() => {
-              const id = params.row.id;
-              setUserList({
-                ...userList,
-                data: userList.data.filter((user) => user.id !== id),
-              });
-              editUser(id);
-            }}
-          >
-            <ModeEditOutlineOutlinedIcon />
-          </Button>
-          <Button
-            type="submit"
-            onClick={() => {
-              const id = params.row.id;
-              setUserList({
-                ...userList,
-                data: userList.data.filter((user) => user.id !== id),
-              });
-              deleteUser(id);
-            }}
-          >
-            <DeleteIcon className="" />
-          </Button>
-        </div>
+        <UserAction
+          user={{
+            // params,
+            id: params.row.id as number,
+            firstName: params.row.firstName as string,
+            lastName: params.row.lastName as string,
+            email: params.row.email as string,
+            fullName: params.row.fullName as string,
+          }}
+        ></UserAction>
       ),
     },
   ];
 
   useEffect(() => {
     (async () => {
-      console.log('useEffect - paginationModel', paginationModel);
       await fetchData();
     })();
-  }, [fetchData, paginationModel, paginationModel.page]);
+  }, [paginationModel, paginationModel.page]);
 
   return (
-    <Box
-      sx={{ width: '100%' }}
-      className={`${theme === 'dark' ? 'dark' : 'light'}`}
-    >
+    <Box sx={{ width: '100%' }}>
       <DataGrid
-        rows={userList.data}
-        {...userList.data}
+        rows={users}
+        {...users}
+        rowCount={userList?.total}
         paginationMode="server"
         columns={columns}
         paginationModel={paginationModel}

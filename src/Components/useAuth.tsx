@@ -1,43 +1,6 @@
-import React, {
-  createContext,
-  useContext,
-  useState,
-  ReactNode,
-  useEffect,
-  useRef,
-} from 'react';
-
-const AuthContext = createContext<{
-  isLoggedIn: boolean;
-  login: boolean;
-}>({
-  isLoggedIn: false,
-  login: false,
-});
-
-const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const login = useRef(false);
-
-  useEffect(() => {
-    const user = localStorage.getItem('user');
-
-    if (user) {
-      login.current = true;
-      setIsLoggedIn(true);
-    }
-  }, [isLoggedIn]);
-
-  return (
-    <AuthContext.Provider value={{ isLoggedIn, login: login.current }}>
-      {children}
-    </AuthContext.Provider>
-  );
-};
-
 export const setLocalStorage = (name: string, access_token: string) => {
   localStorage.setItem('user', name);
-  localStorage.setItem('access_token', access_token);
+  localStorage.setItem(`access_token: `, `${JSON.stringify(access_token)}`);
 };
 
 export const getUserName = () => {
@@ -72,10 +35,4 @@ export const pageRedirect = (page: string) => {
       window.location.href = '/notfound';
       break;
   }
-};
-
-export default AuthProvider;
-
-export const useAuth = () => {
-  return useContext(AuthContext);
 };

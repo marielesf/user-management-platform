@@ -36,6 +36,7 @@ export const doRegister = async (userName: string, password: string) => {
   const token = await loginSuccessful(userName, password);
   if (token) {
     setLocalStorage(userName, token);
+    doRegister(userName, token);
     return true;
   }
   return false;

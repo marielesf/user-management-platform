@@ -16,7 +16,6 @@ export const getListUsers = async (page: number): Promise<ListType> => {
 
   if (response.status === 200) {
     const result = await response.json();
-    console.log('result: ', result);
     return result;
   } else {
     return {} as ListType;

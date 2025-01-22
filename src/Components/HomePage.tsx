@@ -11,6 +11,7 @@ export default function HomePage() {
       pageRedirect('login');
     }
   }, []);
+
   return (
     getUserName() && (
       <Grid container spacing={12}>
