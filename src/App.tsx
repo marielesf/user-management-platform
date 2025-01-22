@@ -1,8 +1,10 @@
 import './App.css';
+import styled from 'styled-components';
 import AppRoutes from './Components/AppRoutes';
 import { useState } from 'react';
 import { User } from './Components/Types/UserTypes';
 import { AppContext } from './context/Context';
+import ToggleSwitch from './Components/ToggleSwitch';
 
 function App() {
   const [users, setUsers] = useState<User[]>([]);
@@ -39,16 +41,15 @@ function App() {
     }
   };
 
-  // const dispatchThemeEvent = (toogle: boolean) => {
-  //   return toogle ? setTheme(true) : setTheme(false);
-  // };
-
   const addAllUsers = (users: User[]) => {
     setUsers(users);
   };
 
   return (
     <div className="App">
+      <ToggleContainer>
+        <ToggleSwitch />
+      </ToggleContainer>
       <AppContext.Provider
         value={{
           users,
@@ -63,3 +64,12 @@ function App() {
 }
 
 export default App;
+
+const ToggleContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: right;
+  margin: 0;
+  height: 10%;
+`;

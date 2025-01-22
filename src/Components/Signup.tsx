@@ -8,7 +8,7 @@ import { pageRedirect } from './useAuth';
 import FormControl from '@mui/material/FormControl';
 import TextField from '@mui/material/TextField';
 import React, { useContext, useEffect } from 'react';
-import { doRegister } from './LoginPage';
+import { doLogin } from './LoginPage';
 import { AppContext } from '../context/Context';
 import { User } from './Types/UserTypes';
 
@@ -25,9 +25,11 @@ export default function Signup() {
   }
   const edit = new URLSearchParams(location.search).get('edit');
   const userId = new URLSearchParams(location.search).get('userId');
+
   useEffect(() => {
     handleLoad();
   }, []);
+
   const handleLoad = () => {
     console.log('edit', edit, 'userId', userId);
     if (edit === 'true' && userId) {
@@ -82,14 +84,17 @@ export default function Signup() {
     } else if (userName) {
       const user: User = { email: email, fullName: userName };
       handleAddtUser(user);
-      doRegister(userName, password);
+      doLogin(userName, password);
       alert(`User: ${userName} created successfully!`);
       navigate('/');
     }
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit} className="form-group">
+      <FormLabel htmlFor="first-name">
+        <h2>Sign Up</h2>
+      </FormLabel>
       <Grid container spacing={3}>
         <FormGrid size={{ xs: 12, md: 6 }}>
           <FormLabel htmlFor="first-name" required>

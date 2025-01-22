@@ -3,14 +3,25 @@ import Stack from '@mui/material/Stack';
 import { Typography } from '@mui/material';
 import UserList from './UserList';
 import { getUserName, pageRedirect } from './useAuth';
-import { useEffect } from 'react';
+import { useContext, useEffect, useState } from 'react';
+import { AppContext } from '../context/Context';
+import { User } from './Types/UserTypes';
 
 export default function HomePage() {
+  const appContext = useContext(AppContext);
+  if (!appContext) {
+    throw new Error('AppContext is undefined');
+  }
+  const { users } = appContext;
+  const [userLoged, setUserLoged] = useState<User>();
+
   useEffect(() => {
     if (!getUserName() || getUserName() === '') {
       pageRedirect('login');
+    } else {
+      setUserLoged(users.find((user) => user.email == getUserName()));
     }
-  }, []);
+  }, [users]);
 
   return (
     getUserName() && (
@@ -25,20 +36,11 @@ export default function HomePage() {
             sx={{
               display: 'flex',
               flexDirection: { xs: 'column', sm: 'row' },
-              alignItems: 'center',
+              // alignItems: 'center',
               fontSize: 'clamp(3rem, 10vw, 3.5rem)',
             }}
           >
-            Hello {getUserName()}
-          </Typography>
-          <Typography
-            sx={{
-              textAlign: 'center',
-              color: 'text.secondary',
-              width: { sm: '100%', md: '80%' },
-            }}
-          >
-            Welcome to User Management Application.
+            Hello {userLoged?.firstName}
           </Typography>
         </Stack>
         <UserList />

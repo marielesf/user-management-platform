@@ -3,6 +3,9 @@
   margin: 0 auto;
   padding: 2rem;
   text-align: center;
+  .css-i5068v-MuiStack-root {
+    width: 100%;
+  }
 }
 
 .logo {
@@ -41,12 +44,21 @@
   color: #888;
 }
 
-body.light {
-  background-color: #ffffff;
-  color: #000000;
-}
-
 body.dark {
   background-color: #000000;
   color: #ffffff;
+
+  [role="presentation"]{
+    background-color: #000000;
+    color: #ffffff;
+  }
+  .MuiTablePagination-root{
+    background-color: white;
+  }
+
+  .form-group{
+    background-color: white;
+    color: #ffffff;
+    padding: 40px;
+  }
 }
