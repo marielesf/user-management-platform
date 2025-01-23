@@ -13,27 +13,15 @@ function App() {
     switch (actionType) {
       case 'ADD_USER':
         console.log('APP -> ADD_USER', newUser);
-
         setUsers([...users, newUser]);
         return;
       case 'REMOVE_USER':
         console.log('APP -> REMOVE_USER', newUser);
-        console.log('APP -> REMOVE_USER2', users);
         setUsers(users.filter((user) => user.id !== newUser.id));
-        console.log(
-          'APP -> REMOVE_USER3',
-          users.filter((user) => {
-            console.log('APP -> REMOVE_USER4', user);
-            console.log('APP -> REMOVE_USER7', newUser);
-            return user.id !== newUser.id;
-          }),
-        );
         return;
       case 'EDIT_USER': {
         console.log('APP -> EDIT_USER - users', newUser);
-
         setUsers([...users, newUser]);
-
         return;
       }
       default:

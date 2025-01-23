@@ -7,7 +7,7 @@ export default function ToggleSwitch() {
   );
 
   function handleOnChange(e: ChangeEvent<HTMLInputElement>) {
-    console.log('---', e.target.checked);
+    console.log('APM LOG - IsDark', e.target.checked);
     if (!isDark) localStorage.setItem('theme', 'dark');
     else localStorage.setItem('theme', 'light');
 

@@ -12,10 +12,8 @@ export const pageRedirect = (page: string) => {
   switch (page) {
     case 'login':
       if (getUserName()) {
-        console.info('GO TO home');
         window.location.href = '/';
       } else {
-        console.info('GO TO login');
         window.location.href = '/login';
       }
       break;
@@ -24,10 +22,8 @@ export const pageRedirect = (page: string) => {
       break;
     case 'home':
       if (getUserName()) {
-        console.info('GO TO home');
         window.location.href = '/';
       } else {
-        console.info('GO TO login');
         window.location.href = '/login';
       }
       break;

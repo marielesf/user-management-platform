@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import { pageRedirect } from './useAuth';
 import FormControl from '@mui/material/FormControl';
 import TextField from '@mui/material/TextField';
-import React, { useContext, useEffect } from 'react';
+import React, { useContext } from 'react';
 import { doLogin } from './LoginPage';
 import { AppContext } from '../context/Context';
 import { User } from './Types/UserTypes';
@@ -26,15 +26,36 @@ export default function Signup() {
   const edit = new URLSearchParams(location.search).get('edit');
   const userId = new URLSearchParams(location.search).get('userId');
 
-  useEffect(() => {
-    handleLoad();
-  }, []);
+  // useEffect(() => {
+  //   const handleLoad = () => {
+  //     if (edit === 'true' && userId) {
+  //       const user = appContext.users.find(
+  //         (user) => user.id === Number(userId),
+  //       );
+  //       if (user) {
+  //         // set values to form
+  //         const userNameElement = document.getElementById(
+  //           'userName',
+  //         ) as HTMLInputElement;
+  //         if (userNameElement) {
+  //           userNameElement.value = user?.firstName + ' ' + user?.lastName;
+  //         }
+  //         const emailElement = document.getElementById(
+  //           'email',
+  //         ) as HTMLInputElement;
+  //         if (emailElement) {
+  //           emailElement.value = user.email;
+  //         }
+  //       }
+  //     }
+  //   };
+  //   handleLoad();
+  // }, [edit, userId, appContext.users]);
 
-  const handleLoad = () => {
-    console.log('edit', edit, 'userId', userId);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const handleLoad = (() => {
     if (edit === 'true' && userId) {
       const user = appContext.users.find((user) => user.id === Number(userId));
-      console.log('user', user);
       if (user) {
         // set values to form
         const userNameElement = document.getElementById(
@@ -51,7 +72,8 @@ export default function Signup() {
         }
       }
     }
-  };
+  })();
+
   const { dispatchUserEvent } = appContext;
 
   const handleAddtUser = (user: User) => {

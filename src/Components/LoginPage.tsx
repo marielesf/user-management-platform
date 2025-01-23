@@ -12,7 +12,6 @@ import Typography from '@mui/material/Typography';
 import { styled } from '@mui/material/styles';
 import { pageRedirect, setLocalStorage } from './useAuth';
 import { loginSuccessful } from '../Service/LoginService';
-// import { useNavigate } from 'react-router-dom';
 
 const Card = styled(MuiCard)(({ theme }) => ({
   display: 'flex',
@@ -32,11 +31,11 @@ const Card = styled(MuiCard)(({ theme }) => ({
   }),
 }));
 
-export const doRegister = async (userName: string, password: string) => {
+export const doLogin = async (userName: string, password: string) => {
   const token = await loginSuccessful(userName, password);
   if (token) {
     setLocalStorage(userName, token);
-    doRegister(userName, token);
+    doLogin(userName, token);
     return true;
   }
   return false;
@@ -61,14 +60,14 @@ export default function LoginPage() {
   };
 
   const validateInputs = async () => {
-    const userName = document.getElementById('userName') as HTMLInputElement;
+    const email = document.getElementById('email') as HTMLInputElement;
     const password = document.getElementById('password') as HTMLInputElement;
 
     let isValid = true;
 
-    if (!userName.value || !(userName.value.length > 0)) {
+    if (!email.value || !/\S+@\S+\.\S+/.test(email.value)) {
       setUserNameError(true);
-      setUserNameMessage('Please enter a valid user name.');
+      setUserNameMessage('Please enter a valid email.');
       isValid = false;
     } else {
       setUserNameError(false);
@@ -84,7 +83,7 @@ export default function LoginPage() {
       setPasswordErrorMessage('');
     }
     if (isValid) {
-      return await doRegister(userName.value, password.value);
+      return await doLogin(email.value, password.value);
     }
     return false;
   };
@@ -106,13 +105,14 @@ export default function LoginPage() {
         sx={{ display: 'flex', flexDirection: 'column', width: '100%', gap: 2 }}
       >
         <FormControl>
-          <FormLabel htmlFor="userName">User Name</FormLabel>
+          <FormLabel htmlFor="userName">Email</FormLabel>
           <TextField
             error={userNameError}
             helperText={userNameErrorMessage}
-            id="userName"
-            name="userName"
-            placeholder="name"
+            id="email"
+            name="email"
+            type="email"
+            placeholder="email@domain.com"
             autoFocus
             required
             fullWidth

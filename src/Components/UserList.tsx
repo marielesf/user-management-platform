@@ -19,7 +19,6 @@ export default function UserList() {
   }
   const { addAllUsers, users } = appContext;
 
-  // const { theme } = useContext(ThemeContext) || { theme: 'light' };
   const [userList, setUserList] = React.useState<ListType>({
     page: 1,
     per_page: 6,
@@ -47,7 +46,6 @@ export default function UserList() {
 
   const fetchData = React.useCallback(async () => {
     const response = await getListUsers(paginationModel.page + 1);
-
     const obj: User[] = response.data.map((user: Record<string, unknown>) =>
       Object.keys(user).reduce(
         (result, key) => ({
@@ -130,7 +128,7 @@ export default function UserList() {
       <DataGrid
         rows={users}
         {...users}
-        rowCount={userList?.total}
+        // rowCount={userList?.total}
         paginationMode="server"
         columns={columns}
         paginationModel={paginationModel}
