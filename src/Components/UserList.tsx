@@ -128,7 +128,7 @@ export default function UserList() {
       <DataGrid
         rows={users}
         {...users}
-        // rowCount={userList?.total}
+        //rowCount={userList?.total}
         paginationMode="server"
         columns={columns}
         paginationModel={paginationModel}

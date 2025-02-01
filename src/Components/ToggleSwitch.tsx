@@ -1,4 +1,4 @@
-import { useState, ChangeEvent, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import styled from 'styled-components';
 
 export default function ToggleSwitch() {
@@ -6,8 +6,8 @@ export default function ToggleSwitch() {
     localStorage.getItem('theme') === 'dark' ? true : false,
   );
 
-  function handleOnChange(e: ChangeEvent<HTMLInputElement>) {
-    console.log('APM LOG - IsDark', e.target.checked);
+  function handleOnChange() {
+    //console.log('APM LOG - IsDark', e.target.checked);
     if (!isDark) localStorage.setItem('theme', 'dark');
     else localStorage.setItem('theme', 'light');
 

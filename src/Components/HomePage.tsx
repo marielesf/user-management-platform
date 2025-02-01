@@ -18,11 +18,12 @@ export default function HomePage() {
   useEffect(() => {
     if (!getUserName() || getUserName() === '') {
       pageRedirect('login');
-    } else {
+    } else if (!userLoged) {
       setUserLoged(users.find((user) => user.email == getUserName()));
     }
   }, [users]);
-
+  console.log('users:', users);
+  console.log('userLoged:', userLoged);
   return (
     getUserName() && (
       <Grid container spacing={12}>
