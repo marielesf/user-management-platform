@@ -70,7 +70,7 @@ describe('User login', () => {
     cy.contains('Hello George').should('exist');
     cy.get('.MuiDataGrid-root').should('exist');
     cy.get('.MuiDataGrid-root').contains('George').should('exist');
-    // cy.get('[title="Go to next page"]').contains('Go to next page').click();
-    // cy.get('.MuiDataGrid-root').contains('Byron').should('exist');
+    cy.get('[title="Go to next page"]').contains('Go to next page').click();
+    cy.get('.MuiDataGrid-root').contains('Byron').should('exist');
   });
 });
